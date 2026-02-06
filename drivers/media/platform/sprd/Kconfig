@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+comment "Unisoc media platform drivers"
+
+source "drivers/media/platform/sprd/camsys/Kconfig"
+source "drivers/media/platform/sprd/isp/Kconfig"

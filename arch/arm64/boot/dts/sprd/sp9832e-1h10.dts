@@ -1,0 +1,79 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Unisoc SC9832E-1h10 boards DTS file
+ *
+ * Copyright (C) 2026, Unisoc Inc.
+ */
+
+/dts-v1/;
+
+#include "sc9832e.dtsi"
+
+/ {
+	model = "Spreadtrum SC9832E";
+	compatible = "sprd,sp9832e-1h10", "sprd,sc9832e";
+
+	aliases {
+		serial1 = &uart1;
+		mmc0 = &sdmmc0;
+	};
+
+	memory@80000000 {
+		device_type = "memory";
+		reg = <0x0 0x80000000 0x0 0x80000000>;
+	};
+
+	chosen {
+		stdout-path = "serial1:115200n8";
+		bootargs = "earlycon=sprd_serial,0x70100000,115200n8 console=ttyS1,115200n8 loglevel=7 init=/init root=/dev/mmcblk0p31 rw rootfstype=ext4 rootwait clk_ignore_unused";
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		ramoops@8845a800 {
+			compatible = "ramoops";
+			reg = <0x0 0x8845a800 0x0 0x40000>;
+			record-size = <0x8000>;
+			console-size = <0x8000>;
+			pmsg-size = <0x8000>;
+			ecc-size = <0>;
+		};
+
+		framebuffer_region: framebuffer@beef0000 {
+			reg = <0x0 0xbeef0000 0x0 0x800000>;
+			no-map;
+		};
+	};
+};
+
+&soc {
+	reg_vmmc_emmc: regulator-emmc-core {
+		compatible = "regulator-fixed";
+		regulator-name = "vmmc-emmc";
+		regulator-min-microvolt = <3000000>;
+		regulator-max-microvolt = <3000000>;
+		regulator-always-on;
+	};
+
+	reg_vqmmc_emmc: regulator-emmc-io {
+		compatible = "regulator-fixed";
+		regulator-name = "vqmmc-emmc";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		regulator-always-on;
+	};
+};
+
+&uart1 {
+	status = "okay";
+};
+
+&sdmmc0 {
+	status = "okay";
+	vmmc-supply = <&reg_vmmc_emmc>;
+	vqmmc-supply = <&reg_vqmmc_emmc>;
+	voltage-ranges = <1800 1800>;
+};

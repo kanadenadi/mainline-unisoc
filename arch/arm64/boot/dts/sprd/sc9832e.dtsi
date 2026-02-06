@@ -1,0 +1,178 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Unisoc SC9832E SoC DTS file
+ *
+ * Copyright (C) 2026, Unisoc Inc.
+ */
+
+#include "sharkle.dtsi"
+#include <dt-bindings/clock/sprd,sc9832e-clk.h>
+
+/ {
+	sprd,sc-id = <0x2668 0x01 0x20000>;
+
+	ext_26m: ext-26m {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <26000000>;
+		clock-output-names = "ext-26m";
+	};
+
+	ext_32k: ext-32k {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <32768>;
+		clock-output-names = "ext-32k";
+	};
+
+	ext_1m: ext-1m {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <1000000>;
+		clock-output-names = "ext-1m";
+	};
+
+	ext_4m3: ext-4m3 {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <4300000>;
+		clock-output-names = "ext-4m3";
+	};
+
+	ext_6m5: ext-6m5 {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <6500000>;
+		clock-output-names = "ext-6m5";
+	};
+
+	ext_13m: ext-13m {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <13000000>;
+		clock-output-names = "ext-13m";
+	};
+
+	ext_250k: ext-250k {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <250000>;
+		clock-output-names = "ext-250k";
+	};
+};
+
+&soc {
+	hwspinlock: hwspinlock@33000000 {
+		compatible = "sprd,hwspinlock-r3p0";
+		reg = <0x0 0x33000000 0x0 0x1000>;
+		#hwlock-cells = <1>;
+		clocks = <&apahb_gate CLK_SPINLOCK_EB>;
+		clock-names = "enable";
+		status = "okay";
+	};
+
+	pmu_controller: syscon@402b0000 {
+		compatible = "sprd,sc9832e-glbregs", "syscon";
+		reg = <0 0x402b0000 0 0x4000>;
+		#clock-cells = <1>;
+		clocks = <&ext_26m>;
+		clock-names = "ext-26m";
+	};
+
+	pll: clock-controller@403c0000 {
+		compatible = "sprd,sc9832e-pll";
+		reg = <0 0x403c0000 0 0x1000>;
+		#clock-cells = <1>;
+		clocks = <&ext_26m>;
+		clock-names = "ext-26m";
+	};
+
+	ap_clk: clock-controller@21500000 {
+		compatible = "sprd,sc9832e-ap-clk";
+		reg = <0 0x21500000 0 0x1000>;
+		#clock-cells = <1>;
+		clocks = <&ext_26m>, <&ext_1m>;
+		clock-names = "ext-26m", "ext-1m";
+	};
+
+	aon_clk: clock-controller@402d0000 {
+		compatible = "sprd,sc9832e-aon-clk";
+		reg = <0 0x402d0000 0 0x1000>;
+		#clock-cells = <1>;
+		clocks = <&ext_4m3>, <&ext_26m>, <&ext_32k>,
+			 <&ext_6m5>, <&ext_13m>, <&ext_250k>;
+		clock-names = "ext-4m3", "ext-26m", "ext-32k",
+			      "ext-6m5", "ext-13m", "ext-250k";
+	};
+
+	aonapb_gate: clock-controller@402e0000 {
+		compatible = "sprd,sc9832e-aonapb-gate";
+		reg = <0 0x402e0000 0 0x1000>;
+		#clock-cells = <1>;
+		clocks = <&ext_26m>;
+		clock-names = "ext-26m";
+	};
+
+	apahb_gate: clock-controller@20e00000 {
+		compatible = "sprd,sc9832e-apahb-gate";
+		reg = <0 0x20e00000 0 0x1000>;
+		#clock-cells = <1>;
+		clocks = <&ext_26m>;
+		clock-names = "ext-26m";
+	};
+
+	apapb_gate: clock-controller@71300000 {
+		compatible = "sprd,sc9832e-apapb-gate";
+		reg = <0 0x71300000 0 0x1000>;
+		#clock-cells = <1>;
+		clocks = <&ext_26m>;
+		clock-names = "ext-26m";
+	};
+
+	pinctrl: pinctrl@402a0000 {
+		compatible = "sprd,sc9832e-pinctrl";
+		reg = <0 0x402a0000 0 0x10000>;
+	};
+
+	ap_gpio: gpio@40280000 {
+		compatible = "sprd,sc9860-gpio";
+		reg = <0 0x40280000 0 0x1000>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
+		interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
+	};
+
+	uart1: serial@70100000 {
+		compatible = "sprd,sc9836-uart";
+		reg = <0x0 0x70100000 0x0 0x100>;
+		interrupts = <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&ap_clk CLK_UART1>, <&apapb_gate CLK_UART1_EB>, <&ext_26m>;
+		clock-names = "uart", "enable", "source";
+		status = "disabled";
+	};
+
+	sdmmc0: mmc@20600000 {
+		compatible = "sprd,sdhci-r11";
+		reg = <0x0 0x20600000 0x0 0x1000>;
+		interrupts = <GIC_SPI 60 IRQ_TYPE_LEVEL_HIGH>;
+		clock-names = "sdio", "enable", "2x_enable";
+		clocks = <&ap_clk CLK_EMMC_2X>,
+			 <&apahb_gate CLK_EMMC_EB>,
+			 <&ap_clk CLK_EMMC_2X>;
+		sprd,phy-delay-mmc-hs400es = <0x5a 0x7f 0x30 0x30>;
+		sprd,phy-delay-mmc-hs400   = <0x5a 0x8c 0x30 0x30>;
+		sprd,phy-delay-mmc-hs200   = <0x7f 0x8c 0x8e 0x8e>;
+		sprd,phy-delay-mmc-ddr52   = <0x9f 0xb3 0x1e 0x1e>;
+		bus-width = <8>;
+		non-removable;
+		cap-mmc-hw-reset;
+		mmc-hs400-enhanced-strobe;
+		mmc-hs400-1_8v;
+		mmc-hs200-1_8v;
+		mmc-ddr-1_8v;
+		sprd,name = "sdio_emmc";
+		status = "disabled";
+	};
+};

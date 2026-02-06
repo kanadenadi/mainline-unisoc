@@ -1,0 +1,198 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * UNISOC UFS Host Controller driver
+ *
+ * Copyright (C) 2022 Unisoc, Inc.
+ * Author: Zhe Wang <zhe.wang1@unisoc.com>
+ */
+
+#ifndef _UFS_SPRD_H_
+#define _UFS_SPRD_H_
+
+#define UFS_REG_HCLKDIV			0xFC
+#define UFS_HCLKDIV_DEFAULT_VALUE	0x100
+
+/* Vendor specific attributes */
+#define RXSQCONTROL	0x8009
+#define CBRATESEL	0x8114
+#define CBCREGADDRLSB	0x8116
+#define CBCREGADDRMSB	0x8117
+#define CBCREGWRLSB	0x8118
+#define CBCREGWRMSB	0x8119
+#define CBCREGRDWRSEL	0x811C
+#define CBCRCTRL	0x811F
+#define CBREFCLKCTRL2	0x8132
+#define VS_MPHYDISABLE	0xD0C1
+
+/* UMS9230 specific registers */
+#define AP_AHB_UFS_LP_CTRL_1		0x3104
+#define AP_AHB_UFS_SEL_LP_RESET_N	BIT(24)
+#define AP_AHB_UFS_FORCE_LP_RESET_N	BIT(25)
+#define AP_AHB_UFS_SEL_LP_ISOL_EN	BIT(26)
+#define AP_AHB_UFS_FORCE_LP_ISOL_EN	BIT(27)
+#define AP_AHB_UFS_SEL_LP_PWR_READY	BIT(28)
+#define AP_AHB_UFS_FORCE_LP_PWR_READY	BIT(29)
+
+#define AP_AHB_UFS_CONTROLLER		0x3108
+#define AP_AHB_IES_EN			BIT(0)
+
+#define AP_AHB_MPHY_CB_CHANNEL_0	0x311C
+#define AP_AHB_CB_REFCLKON		BIT(0)
+#define AP_AHB_CB_CFGCLK		BIT(1)
+#define AP_AHB_CB_RESET			BIT(2)
+
+#define AP_AHB_UFS_CLK_CTRL		0x3124
+#define AP_AHB_CG_PCLKREQ_SW		BIT(0)
+#define AP_AHB_CG_CFGCLK_SW		BIT(6)
+
+#define MPHY_2T2R_APB_REG1		0x68
+#define MPHY_2T2R_APB_RESETN		BIT(3)
+
+#define MPHY_LANE0_FIFO			0xC08C
+#define MPHY_LANE1_FIFO			0xC88C
+#define MPHY_FIFO_ENABLE_MASK		BIT(15)
+
+#define MPHY_TACTIVATE_TIME_LANE0	0xC088
+#define MPHY_TACTIVATE_TIME_LANE1	0xC888
+#define MPHY_TACTIVATE_TIME_200US	BIT(17)
+
+#define MPHY_DIG_CFG7_LANE0		0xC01C
+#define MPHY_DIG_CFG7_LANE1		0xC81C
+#define MPHY_CDR_MONITOR_BYPASS_MASK	GENMASK(24, 24)
+#define MPHY_CDR_MONITOR_BYPASS_ENABLE	BIT(24)
+
+#define MPHY_DIG_CFG20_LANE0		0xC050
+#define MPHY_RXOFFSETCALDONEOVR_MASK	GENMASK(5, 4)
+#define MPHY_RXOFFSETCALDONEOVR_ENABLE	(BIT(5) | BIT(4))
+#define MPHY_RXOFFOVRVAL_MASK		GENMASK(11, 10)
+#define MPHY_RXOFFOVRVAL_ENABLE		(BIT(11) | BIT(10))
+
+#define MPHY_DIG_CFG49_LANE0		0xC0C4
+#define MPHY_DIG_CFG49_LANE1		0xC8C4
+#define MPHY_RXCFGG1_MASK		GENMASK(23, 0)
+#define MPHY_RXCFGG1_VAL		0x0C0C0C
+
+#define MPHY_DIG_CFG51_LANE0		0xC0CC
+#define MPHY_DIG_CFG51_LANE1		0xC8CC
+#define MPHY_RXCFGG3_MASK		GENMASK(23, 0)
+#define MPHY_RXCFGG3_VAL		0x0D0D0D
+
+#define MPHY_DIG_CFG72_LANE0		0xC120
+#define MPHY_DIG_CFG72_LANE1		0xC920
+#define MPHY_RXHSG3SYNCCAP_MASK		GENMASK(15, 8)
+#define MPHY_RXHSG3SYNCCAP_VAL		(0x4B << 8)
+
+#define MPHY_DIG_CFG60_LANE0		0xC0F0
+#define MPHY_DIG_CFG60_LANE1		0xC8F0
+#define MPHY_RX_STEP4_CYCLE_G3_MASK	GENMASK(31, 16)
+#define MPHY_RX_STEP4_CYCLE_G3_VAL	BIT(23)
+
+#define MPHY_DIG_CFG14_LANE0		0xC038
+#define MPHY_APB_REFCLK_AUTOH8_EN_MASK	GENMASK(24, 24)
+#define MPHY_APB_REFCLK_AUTOH8_EN_VAL	(0<<24)
+
+#define MPHY_REG_SEL_CFG_0			0xF0
+#define MPHY_REG_SEL_CFG_0_REFCLKON_MASK	GENMASK(18, 18)
+#define MPHY_REG_SEL_CFG_0_REFCLKON_VAL		BIT(18)
+
+#define MPHY_ANR_MPHY_CTRL2			0x40
+#define MPHY_ANR_MPHY_CTRL2_REFCLKON_MASK	GENMASK(8, 8)
+#define MPHY_ANR_MPHY_CTRL2_REFCLKON_VAL	BIT(8)
+
+#define MPHY_DIG_CFG18_LANE0		(0xC048)
+#define MPHY_APB_PLLTIMER_MASK		GENMASK(23, 16)
+#define MPHY_APB_PLLTIMER_VAL		(0xD8 << 16)
+
+#define MPHY_DIG_CFG19_LANE0		(0xc04c)
+#define MPHY_APB_HSTXSCLKINV1_MASK	BIT(13)
+#define MPHY_APB_HSTXSCLKINV1_VAL	BIT(13)
+
+#define MPHY_DIG_CFG1_LANE0		0xC004
+#define MPHY_DIG_CFG17_LANE0		0xC044
+#define MPHY_DIG_CFG32_LANE0		0xC080
+
+#define MPHY_DIG_CFG1_LANE1		0xC804
+#define MPHY_DIG_CFG17_LANE1		0xC844
+#define MPHY_DIG_CFG32_LANE1		0xC880
+
+#define MPHY_APB_RX_CFGRXBIASLSENVAL_MASK	BIT(5)
+#define MPHY_APB_RX_CFGRXBIASLSENOVR_MASK	BIT(21)
+#define MPHY_APB_OVR_REG_LS_LDO_STABLE_MASK	BIT(28)
+#define MPHY_APB_REG_LS_LDO_STABLE_MASK		BIT(17)
+
+#define MPHY_DIG_CFG62_LANE0		0xC0F8
+#define MPHY_DIG_CFG66_LANE0		0xC108
+#define MPHY_DIG_CFG15_LANE0		0xC03C
+
+#define MPHY_APB_REG_DCO_CTRLBIT	GENMASK(7, 0)
+#define MPHY_APB_REG_DCO_VALUE		0x2C
+#define MPHY_APB_OVR_REG_DCO_CTRLBIT	GENMASK(16, 16)
+#define MPHY_APB_OVR_REG_DCO_VALUE	BIT(16)
+
+/* UMS9620 specific registers */
+#define APB_UFSDEV_REG		0xCE8
+#define APB_UFSDEV_REFCLK_EN	0x2
+#define APB_USB31PLL_CTRL	0xCFC
+#define APB_USB31PLLV_REF2MPHY	0x1
+
+#define SPRD_SIP_SVC_STORAGE_UFS_CRYPTO_ENABLE				\
+	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
+			   ARM_SMCCC_SMC_32,				\
+			   ARM_SMCCC_OWNER_SIP,				\
+			   0x0301)
+
+enum SPRD_UFS_RST_INDEX {
+	SPRD_UFSHCI_SOFT_RST,
+	SPRD_UFS_DEV_RST,
+	SPRD_UFS_GLB_RST,
+
+	SPRD_UFS_RST_MAX
+};
+
+enum SPRD_UFS_SYSCON_INDEX {
+	SPRD_UFS_ANLG,
+	SPRD_UFS_AON_APB,
+	SPRD_UFS_AP_AHB,
+
+	SPRD_UFS_SYSCON_MAX
+};
+
+enum SPRD_UFS_VREG_INDEX {
+	SPRD_UFS_VDD_MPHY,
+
+	SPRD_UFS_VREG_MAX
+};
+
+struct ufs_sprd_rst {
+	const char *name;
+	struct reset_control *rc;
+};
+
+struct ufs_sprd_syscon {
+	const char *name;
+	struct regmap *regmap;
+};
+
+struct ufs_sprd_vreg {
+	const char *name;
+	struct regulator *vreg;
+};
+
+struct ufs_sprd_priv {
+	unsigned int caps;
+	unsigned int quirks;
+	struct ufs_sprd_rst rci[SPRD_UFS_RST_MAX];
+	struct ufs_sprd_syscon sysci[SPRD_UFS_SYSCON_MAX];
+	struct ufs_sprd_vreg vregi[SPRD_UFS_VREG_MAX];
+	const struct ufs_hba_variant_ops ufs_hba_sprd_vops;
+};
+
+struct ufs_sprd_host {
+	struct ufs_hba *hba;
+	struct ufs_sprd_priv *priv;
+	void __iomem *ufs_dbg_mmio;
+
+	enum ufs_unipro_ver unipro_ver;
+};
+
+#endif /* _UFS_SPRD_H_ */
