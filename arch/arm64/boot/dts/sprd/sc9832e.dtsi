@@ -153,6 +153,18 @@
 		status = "disabled";
 	};
 
+	gpu: gpu@60300000 {
+		compatible = "sprd,sc9832e-mali", "arm,mali-t820";
+		reg = <0x0 0x60300000 0x0 0x4000>;
+		interrupts = <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "job", "mmu", "gpu";
+		clocks = <&aon_clk CLK_NIC_GPU>, <&aonapb_gate CLK_GPU_EB>;
+		clock-names = "core", "bus";
+		status = "disabled";
+	};
+
 	sdmmc0: mmc@20600000 {
 		compatible = "sprd,sdhci-r11";
 		reg = <0x0 0x20600000 0x0 0x1000>;

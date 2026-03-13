@@ -71,6 +71,10 @@
 	status = "okay";
 };
 
+&gpu {
+	status = "okay";
+};
+
 &sdmmc0 {
 	status = "okay";
 	vmmc-supply = <&reg_vmmc_emmc>;
