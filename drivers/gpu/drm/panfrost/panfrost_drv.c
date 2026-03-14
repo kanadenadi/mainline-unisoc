@@ -958,6 +958,7 @@ static const struct of_device_id dt_match[] = {
 	{ .compatible = "mediatek,mt8192-mali", .data = &mediatek_mt8192_data },
 	{ .compatible = "mediatek,mt8370-mali", .data = &mediatek_mt8370_data },
 	{ .compatible = "allwinner,sun50i-h616-mali", .data = &allwinner_h616_data },
+	{ .compatible = "sprd,sc9832e-mali", .data = &default_data, },
 	{ .compatible = "sprd,ums9230-mali", .data = &unisoc_ums9230_data },
 	{}
 };

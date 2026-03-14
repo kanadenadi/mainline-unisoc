@@ -58,6 +58,7 @@
 
    core-api/index
    driver-api/index
+   gpu/index
    subsystem-apis
    内核中的锁 <locking/index>
 
